@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hellstar Key System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid #f0f0f0;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        h1 {
+            color: #2d3436;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #636e72;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .get-key-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .get-key-btn:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .get-key-btn:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .get-key-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(231, 76, 60, 0.4);
+        }
+
+        .get-key-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .get-key-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .key-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #2d3436;
+            word-break: break-all;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .key-display.show {
+            opacity: 1;
+            transform: translateY(0);
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeaea 100%);
+        }
+
+        .key-display.empty {
+            color: #b2bec3;
+            font-style: italic;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .copy-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 10px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .get-key-btn {
+                padding: 12px 30px;
+                font-size: 1.1em;
+            }
+            
+            .key-display {
+                font-size: 0.9em;
+                padding: 15px;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus styles for accessibility */
+        .get-key-btn:focus,
+        .copy-btn:focus {
+            outline: 3px solid rgba(231, 76, 60, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Selection color */
+        ::selection {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #2d3436;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg width="120" height="120" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Star body with gradient -->
+                <defs>
+                    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#c0392b;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="wingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#c0392b;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#a93226;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Main star -->
+                <polygon points="200,60 230,140 320,140 250,200 280,280 200,220 120,280 150,200 80,140 170,140" 
+                         fill="url(#starGradient)" stroke="#8b0000" stroke-width="3"/>
+                
+                <!-- Left wing -->
+                <ellipse cx="140" cy="180" rx="60" ry="25" fill="url(#wingGradient)" stroke="#8b0000" stroke-width="2" transform="rotate(-20 140 180)"/>
+                <ellipse cx="120" cy="190" rx="45" ry="18" fill="#a93226" stroke="#8b0000" stroke-width="1.5" transform="rotate(-20 120 190)"/>
+                
+                <!-- Right wing -->
+                <ellipse cx="260" cy="180" rx="60" ry="25" fill="url(#wingGradient)" stroke="#8b0000" stroke-width="2" transform="rotate(20 260 180)"/>
+                <ellipse cx="280" cy="190" rx="45" ry="18" fill="#a93226" stroke="#8b0000" stroke-width="1.5" transform="rotate(20 280 190)"/>
+                
+                <!-- Star face -->
+                <circle cx="190" cy="160" r="4" fill="#8b0000"/>
+                <circle cx="210" cy="160" r="4" fill="#8b0000"/>
+                <path d="M185,180 Q200,190 215,180" stroke="#8b0000" stroke-width="2" fill="none"/>
+                
+                <!-- Highlight on star -->
+                <ellipse cx="180" cy="120" rx="15" ry="8" fill="rgba(255,255,255,0.3)" transform="rotate(-10 180 120)"/>
+            </svg>
+        </div>
+        
+        <h1>Hellstar</h1>
+        <p class="subtitle">Key System</p>
+        
+        <button class="get-key-btn" onclick="generateKey()" id="generateBtn">Get Key</button>
+        
+        <div class="key-display empty" id="keyDisplay">
+            Click "Get Key" to generate your access key
+        </div>
+        
+        <button class="copy-btn" id="copyBtn" onclick="copyKey()">Copy Key</button>
+        <div class="success-message" id="successMessage">Key copied to clipboard!</div>
+    </div>
+
+    <script>
+        let currentKey = '';
+        
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        function generateKey() {
+            const keyDisplay = document.getElementById('keyDisplay');
+            const copyBtn = document.getElementById('copyBtn');
+            const getKeyBtn = document.getElementById('generateBtn');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Hide success message if visible
+            successMessage.classList.remove('show');
+            
+            // Show loading state
+            getKeyBtn.innerHTML = '<div class="loading"></div>Generating...';
+            getKeyBtn.disabled = true;
+            
+            // Hide previous key and copy button with smooth animation
+            keyDisplay.classList.remove('show');
+            copyBtn.classList.remove('show');
+            
+            setTimeout(() => {
+                // Generate the key with format: Hellstar_xxxxxxxxxxxxxxxxxxxxxxxxxxx
+                const randomPart = generateRandomString(31);
+                currentKey = `Hellstar_${randomPart}`;
+                
+                // Display the key with animation
+                keyDisplay.textContent = currentKey;
+                keyDisplay.classList.remove('empty');
+                
+                // Smooth reveal animation
+                setTimeout(() => {
+                    keyDisplay.classList.add('show');
+                    
+                    // Show copy button after key appears
+                    setTimeout(() => {
+                        copyBtn.classList.add('show');
+                    }, 200);
+                }, 100);
+                
+                // Reset button with smooth transition
+                getKeyBtn.innerHTML = 'Get Key';
+                getKeyBtn.disabled = false;
+                
+            }, 1200); // Slightly faster generation
+        }
+        
+        function copyKey() {
+            if (!currentKey) return;
+            
+            const successMessage = document.getElementById('successMessage');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Modern clipboard API with fallback
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(currentKey).then(() => {
+                    showCopySuccess();
+                }).catch(() => {
+                    fallbackCopy();
+                });
+            } else {
+                fallbackCopy();
+            }
+            
+            function fallbackCopy() {
+                const textArea = document.createElement('textarea');
+                textArea.value = currentKey;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    showCopySuccess();
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+                
+                document.body.removeChild(textArea);
+            }
+            
+            function showCopySuccess() {
+                copyBtn.textContent = 'Copied!';
+                successMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy Key';
+                    successMessage.classList.remove('show');
+                }, 2500);
+            }
+        }
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Press Enter or Space to generate key
+            if ((event.key === 'Enter' || event.key === ' ') && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                if (document.activeElement === document.body || document.activeElement.tagName === 'BUTTON') {
+                    event.preventDefault();
+                    if (currentKey && document.activeElement === document.getElementById('copyBtn')) {
+                        copyKey();
+                    } else {
+                        generateKey();
+                    }
+                }
+            }
+            
+            // Ctrl+C to copy key
+            if (event.ctrlKey && event.key === 'c' && currentKey) {
+                event.preventDefault();
+                copyKey();
+            }
+        });
+        
+        // Add smooth focus transitions
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('focus', function() {
+                this.style.transform = 'translateY(-1px)';
+            });
+            
+            button.addEventListener('blur', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
